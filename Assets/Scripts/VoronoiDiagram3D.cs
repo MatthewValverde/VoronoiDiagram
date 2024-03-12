@@ -25,12 +25,41 @@ public class VoronoiDiagram3D : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         material = meshRenderer.material; // Ensure this material uses your custom shader
     }
+    void OnEnable()
+    {
+        SettingsLoader.OnSettingsLoaded += SettingsLoaded;
+    }
+
+    void OnDisable()
+    {
+        SettingsLoader.OnSettingsLoaded -= SettingsLoaded;
+    }
 
     private void Start()
     {
-        if (useRandomPoints)
+
+    }
+
+    private void SettingsLoaded()
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
         {
-            pointPositions = GenerateRandomPoints(totalRandomPoints);
+            mainCamera.orthographic = SettingsLoader.Orthographic;
+            if (SettingsLoader.Isometric)
+            {
+                mainCamera.transform.position = new Vector3(-3.271372f, 4.229227f, 4.293624f);
+                mainCamera.transform.eulerAngles = new Vector3(33, 144, 0);
+            }
+        }
+
+        if (SettingsLoader.RandomPoints)
+        {
+            pointPositions = GenerateRandomPoints(SettingsLoader.AmountOfRandomPoints);
+        }
+        else
+        {
+            pointPositions = SettingsLoader.GetPointsArray();
         }
 
         directions = new Vector3[pointPositions.Length];
@@ -54,7 +83,7 @@ public class VoronoiDiagram3D : MonoBehaviour
             float z = 2.0f;
             float x = Random.Range(0.0f, 1.0f);
             float y = Random.Range(0.0f, 1.0f);
-            if(withRandomZ) z = Random.Range(2.0f, 3.0f);
+            if (withRandomZ) z = Random.Range(2.0f, 3.0f);
             points[i] = (new Vector3(x, y, z));
         }
 
@@ -63,11 +92,18 @@ public class VoronoiDiagram3D : MonoBehaviour
 
     private Vector3 GetRandomDirection()
     {
-        return new Vector3(Random.Range(0, 2) * 2 - 1, Random.Range(0, 2) * 2 - 1, 0.1f);
+        Vector3 temp = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0);
+        ; return temp;
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            // Toggle the bool value
+            animate = !animate;
+        }
+
         if (animate) UpdatePointPositions();
     }
 
@@ -101,7 +137,28 @@ public class VoronoiDiagram3D : MonoBehaviour
         for (int i = 0; i < pointPositions.Length; i++)
         {
             Vector3 position = new Vector3(To3D(pointPositions[i].x), 0, To3D(pointPositions[i].y));
-            GameObject cone = GenerateCone("Cone_" + i, pointPositions[i].z, 1f, 18, position);
+            Color color;
+            if (SettingsLoader.RandomColors)
+            {
+                color = new Color(Random.value, Random.value, Random.value);
+            }
+            else
+            {
+                try
+                {
+                    color = SettingsLoader.Colors[i];
+                }
+                catch (System.ArgumentOutOfRangeException e)
+                {
+                    color = new Color(Random.value, Random.value, Random.value);
+                }
+                catch (System.Exception e)
+                {
+                    color = new Color(Random.value, Random.value, Random.value);
+                }
+               
+            }
+            GameObject cone = GenerateCone("Cone_" + i, pointPositions[i].z, SettingsLoader.ConeRadius, SettingsLoader.ConeSegments, position, color);
             cones[i] = cone;
         }
     }
@@ -114,7 +171,7 @@ public class VoronoiDiagram3D : MonoBehaviour
         }
     }
 
-    GameObject GenerateCone(string name, float height, float bottomRadius, int numVertices, Vector3 position)
+    GameObject GenerateCone(string name, float height, float bottomRadius, int numVertices, Vector3 position, Color color)
     {
         GameObject coneObject = new GameObject(name);
 
@@ -124,9 +181,6 @@ public class VoronoiDiagram3D : MonoBehaviour
         // Add a MeshRenderer component to the GameObject
         MeshRenderer meshRenderer = coneObject.AddComponent<MeshRenderer>();
 
-        // Add a MeshRenderer component to the GameObject
-       // LineRenderer lineRenderer = coneObject.AddComponent<LineRenderer>();
-
         // Call the CreateConeMesh method to generate the cone mesh
         Mesh coneMesh = ConeMesh.CreateConeMesh(height, bottomRadius, numVertices);
 
@@ -135,33 +189,30 @@ public class VoronoiDiagram3D : MonoBehaviour
 
         // Optionally, assign a material to the MeshRenderer
         // For this example, we'll use a default material
-        meshRenderer.material = new Material(Shader.Find("Unlit/Color"));
-        meshRenderer.material.color = new Color(Random.value, Random.value, Random.value);
+        meshRenderer.material = new Material(Shader.Find(SettingsLoader.Shader));
+        meshRenderer.material.color = color;
 
         // Set the position of the cone
         coneObject.transform.position = position;
 
-       // ConeMesh.RenderLine(coneObject, lineRenderer, Color.black);
+        // Add a MeshRenderer component to the GameObject
+        if (SettingsLoader.DrawVertices)
+        {
+            LineRenderer lineRenderer = coneObject.AddComponent<LineRenderer>();
+            ConeMesh.RenderLine(coneObject, lineRenderer, Color.black);
+        }
 
-        // Create a sphere GameObject and position it at the apex of the cone
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-
-        // Set the sphere size and position
-        float sphereSize = 0.03f; // Adjust the size of the sphere as needed
-        sphere.transform.localScale = new Vector3(sphereSize, sphereSize, sphereSize);
-        sphere.transform.position = new Vector3(position.x, height, position.z); // Position at the cone's apex
-
-        // Optionally, parent the sphere to the cone for better scene organization
-
-        // Create or assign a material to the sphere
-        // Create or assign a material to the sphere
-        Material sphereMaterial = new Material(Shader.Find("Unlit/Color"));
-        sphereMaterial.color = Color.black; // Change the color to whatever you prefer
-
-        // Assign the material to the sphere's renderer
-        sphere.GetComponent<Renderer>().material = sphereMaterial;
-
-        sphere.transform.parent = coneObject.transform;
+        if (SettingsLoader.ShowSeeds)
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            float sphereSize = 0.03f;
+            sphere.transform.localScale = new Vector3(sphereSize, sphereSize, sphereSize);
+            sphere.transform.position = new Vector3(position.x, height, position.z);
+            Material sphereMaterial = new Material(Shader.Find("Unlit/Color"));
+            sphereMaterial.color = Color.black;
+            sphere.GetComponent<Renderer>().material = sphereMaterial;
+            sphere.transform.parent = coneObject.transform;
+        }
 
         return coneObject;
     }
@@ -170,17 +221,20 @@ public class VoronoiDiagram3D : MonoBehaviour
     {
         for (int i = 0; i < pointPositions.Length; i++)
         {
+            // Normalize the direction to ensure uniform speed
+            Vector3 normalizedDirection = directions[i].normalized;
+
             // Move point
-            pointPositions[i] += directions[i] * speed * Time.deltaTime;
+            pointPositions[i] += normalizedDirection * SettingsLoader.Speed * Time.deltaTime;
 
             // Check for boundaries and reflect direction if needed
             if (pointPositions[i].x <= boundary.xMin || pointPositions[i].x >= boundary.xMax)
             {
-                directions[i] = new Vector2(-directions[i].x, directions[i].y);
+                directions[i] = new Vector3(-directions[i].x, directions[i].y, 0).normalized; // Normalize the new direction as well
             }
             if (pointPositions[i].y <= boundary.yMin || pointPositions[i].y >= boundary.yMax)
             {
-                directions[i] = new Vector2(directions[i].x, -directions[i].y);
+                directions[i] = new Vector3(directions[i].x, -directions[i].y, 0).normalized; // Normalize the new direction as well
             }
         }
         GenerateDiagram();
