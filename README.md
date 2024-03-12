@@ -1,4 +1,4 @@
-# VoronoiDiagram Cone Genration and Visualization
+# VoronoiDiagram Cone Generation and Visualization
 
 Find the settings.json file in the StreamingAssets directory.
 
