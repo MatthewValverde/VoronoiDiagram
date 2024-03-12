@@ -90,7 +90,7 @@ Shader "Custom/VoronoiShader"
 
                     float pointDistance = nearestDistance;
                     // After determining the nearest point and before final color calculation:
-                    float3 seedPoint = points2[nearestPointIndex];
+                    /*float3 seedPoint = points2[nearestPointIndex];
                     float2 direction = normalize(i.uv - seedPoint.xy);
                     float angle = atan2(direction.y, direction.x);
 
@@ -107,7 +107,7 @@ Shader "Custom/VoronoiShader"
                             // Modify this color based on desired line appearance
                             return fixed4(0, 0, 0, 1); // Drawing the line
                         }
-                    }
+                    }*/
 
                     fixed3 darkGrey = fixed3(0.25, 0.25, 0.25);
                     float zCoordinate = points2[nearestPointIndex].z;

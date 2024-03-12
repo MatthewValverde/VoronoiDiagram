@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ConeMesh : MonoBehaviour
@@ -39,37 +37,75 @@ public class ConeMesh : MonoBehaviour
             normals[i] = sideNormal; // Adjust normals to point outwards for the sides
         }
 
-        // Create bottom circle triangles
+        // Adjusted bottom circle triangles
         for (int i = 0; i < numVertices - 1; i++)
         {
             triangles[i * 3] = 0;
-            triangles[i * 3 + 1] = i + 1;
-            triangles[i * 3 + 2] = i + 2;
+            triangles[i * 3 + 2] = i + 1; // Swapped
+            triangles[i * 3 + 1] = i + 2; // Swapped
         }
 
-        // Last triangle for the bottom circle
+        // Adjusted last triangle for the bottom circle
         triangles[(numVertices - 1) * 3] = 0;
-        triangles[(numVertices - 1) * 3 + 1] = numVertices;
-        triangles[(numVertices - 1) * 3 + 2] = 1;
+        triangles[(numVertices - 1) * 3 + 2] = numVertices; // Swapped
+        triangles[(numVertices - 1) * 3 + 1] = 1; // Swapped
 
-        // Create side triangles
+        // Adjusted side triangles
         for (int i = 0; i < numVertices - 1; i++)
         {
             triangles[(numVertices + i) * 3] = i + 1;
-            triangles[(numVertices + i) * 3 + 1] = i + 2;
-            triangles[(numVertices + i) * 3 + 2] = numVertices + 1;
+            triangles[(numVertices + i) * 3 + 2] = i + 2; // Swapped
+            triangles[(numVertices + i) * 3 + 1] = numVertices + 1; // Swapped
         }
 
-        // Last side triangle
+        // Adjusted last side triangle
         triangles[(numVertices * 2 - 1) * 3] = numVertices;
-        triangles[(numVertices * 2 - 1) * 3 + 1] = 1;
-        triangles[(numVertices * 2 - 1) * 3 + 2] = numVertices + 1;
+        triangles[(numVertices * 2 - 1) * 3 + 2] = 1; // Swapped
+        triangles[(numVertices * 2 - 1) * 3 + 1] = numVertices + 1; // Swapped
+
 
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.normals = normals;
 
         return mesh;
+    }
+
+    public static void RenderLine(GameObject coneObject, LineRenderer lineRenderer, Color lineColor, float lineWidth = 0.01f)
+    {
+        if (coneObject == null) return;
+
+        Mesh coneMesh = coneObject.GetComponent<MeshFilter>().mesh;
+        if (coneMesh == null) return;
+
+        //LineRenderer lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.startWidth = lineWidth;
+        lineRenderer.endWidth = lineWidth;
+        lineRenderer.useWorldSpace = false;
+
+        // Assuming the cone apex is the last vertex and the base starts at 0
+        Vector3 apex = coneMesh.vertices[coneMesh.vertexCount - 1];
+        int baseVertexCount = coneMesh.vertexCount - 1; // Excluding the apex
+
+        lineRenderer.positionCount = baseVertexCount * 2 + 1;
+        for (int i = 0; i < baseVertexCount; i++)
+        {
+            lineRenderer.SetPosition(i * 2, coneMesh.vertices[i]); // Base vertex
+            lineRenderer.SetPosition(i * 2 + 1, apex); // Connect to apex
+
+            if (i == baseVertexCount - 1) // Closing the base loop
+            {
+                lineRenderer.SetPosition(lineRenderer.positionCount - 1, coneMesh.vertices[0]);
+            }
+            else // Base to base
+            {
+                lineRenderer.SetPosition(i * 2 + 2, coneMesh.vertices[i + 1]);
+            }
+        }
+
+        // Set the material and colors
+        lineRenderer.material = new Material(Shader.Find("Unlit/Color"));
+        lineRenderer.material.color = lineColor;
     }
 
 }

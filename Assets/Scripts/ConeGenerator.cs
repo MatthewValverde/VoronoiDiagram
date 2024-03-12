@@ -5,8 +5,6 @@ public class ConeGenerator : MonoBehaviour
 {
     private Mesh coneMeshMain;
 
-    public Material lineMaterial;
-
     public float lineWidth = 0.1f;
     public Color lineColor = Color.black;
     void Start()
@@ -21,14 +19,14 @@ public class ConeGenerator : MonoBehaviour
         MeshRenderer meshRenderer = coneObject.AddComponent<MeshRenderer>();
 
         // Call the CreateConeMesh method to generate the cone mesh
-        coneMeshMain = ConeMesh.CreateConeMesh(2.0f, 1.0f, 10);
+        coneMeshMain = ConeMesh.CreateConeMesh(2.0f, 1.0f, 9);
 
         // Assign the generated mesh to the MeshFilter
         meshFilter.mesh = coneMeshMain;
 
         // Optionally, assign a material to the MeshRenderer
         // For this example, we'll use a default material
-        meshRenderer.material = new Material(Shader.Find("Standard"));
+        meshRenderer.material = new Material(Shader.Find("Unlit/Color"));
         meshRenderer.material.color = new Color(Random.value, Random.value, Random.value);
 
         RenderLine(coneObject);
@@ -68,47 +66,6 @@ public class ConeGenerator : MonoBehaviour
 
         // Set the material and colors
         lineRenderer.material = new Material(Shader.Find("Unlit/Color"));
-        lineRenderer.startColor = lineColor;
-        lineRenderer.endColor = lineColor;
+        lineRenderer.material.color = lineColor;
     }
-
-    /*void OnRenderObject()
-    {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-        if (mesh == null)
-        {
-            Debug.LogWarning("WireframeRenderer: Mesh is null.");
-            return;
-        }
-        if (lineMaterial == null)
-        {
-            Debug.LogWarning("WireframeRenderer: Line Material is not set.");
-            return;
-        }
-
-        lineMaterial.SetPass(0);
-        GL.PushMatrix();
-        GL.MultMatrix(transform.localToWorldMatrix);
-        GL.Begin(GL.LINES);
-        GL.Color(Color.black); // Consider making this a public variable for easy adjustment
-
-        for (int i = 0; i < mesh.vertices.Length; i += 3)
-        {
-            if (i + 2 >= mesh.vertices.Length) break; // Safety check
-
-            GL.Vertex(mesh.vertices[i]);
-            GL.Vertex(mesh.vertices[i + 1]);
-
-            GL.Vertex(mesh.vertices[i + 1]);
-            GL.Vertex(mesh.vertices[i + 2]);
-
-            GL.Vertex(mesh.vertices[i + 2]);
-            GL.Vertex(mesh.vertices[i]);
-        }
-
-        GL.End();
-        GL.PopMatrix();
-
-        Debug.Log("WireframeRenderer: GL Lines should be rendered.");
-    }*/
 }
