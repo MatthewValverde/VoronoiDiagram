@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class ConeMesh : MonoBehaviour
 {
-    public static Mesh CreateConeMesh(float height, float bottomRadius, int numVertices)
+    public static Mesh CreateConeMesh(float height, float radiusMultiplier, int numVertices)
     {
         Mesh mesh = new Mesh();
         // After defining vertices and triangles
-
+        float bottomRadius = height * radiusMultiplier;
 
         Vector3[] vertices = new Vector3[numVertices + 2];
         Vector3[] normals = new Vector3[numVertices + 2];

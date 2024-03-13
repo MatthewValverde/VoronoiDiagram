@@ -2,14 +2,19 @@
   "RandomPoints": true,
   "RandomColors": true,
   "AmountOfRandomPoints": 50,
-  "ConeRadius": 1.0,
+  "ConeRadiusMultiplier": 0.4,
   "ConeSegments": 21,
   "DrawVertices": false,
   "ShowSeeds": true,
   "Orthographic": true,
   "Isometric": false,
   "Speed": 0.05,
+  "RandomHeightRange": {
+    "min": 0.5,
+    "max": 2.0
+  },
   "Shader": "Unlit/Color",
+  "BackgroundColor": "#333333",
   "Points": [
     {
       "x": 0.1,

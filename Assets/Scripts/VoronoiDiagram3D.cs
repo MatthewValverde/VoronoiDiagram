@@ -17,7 +17,6 @@ public class VoronoiDiagram3D : MonoBehaviour
     public float speed = 5f;
     public Rect boundary;
     private Vector3[] directions; // Array to hold directions corresponding to points
-    // Data structure for Voronoi corners to be calculated
     private List<List<Vector2>> voronoiCorners;
     private GameObject[] cones;
     private void Awake()
@@ -35,11 +34,6 @@ public class VoronoiDiagram3D : MonoBehaviour
         SettingsLoader.OnSettingsLoaded -= SettingsLoaded;
     }
 
-    private void Start()
-    {
-
-    }
-
     private void SettingsLoaded()
     {
         Camera mainCamera = Camera.main;
@@ -51,6 +45,7 @@ public class VoronoiDiagram3D : MonoBehaviour
                 mainCamera.transform.position = new Vector3(-3.271372f, 4.229227f, 4.293624f);
                 mainCamera.transform.eulerAngles = new Vector3(33, 144, 0);
             }
+            mainCamera.backgroundColor = SettingsLoader.BackgroundColor;
         }
 
         if (SettingsLoader.RandomPoints)
@@ -80,10 +75,9 @@ public class VoronoiDiagram3D : MonoBehaviour
 
         for (int i = 0; i < numberOfPoints; i++)
         {
-            float z = 2.0f;
             float x = Random.Range(0.0f, 1.0f);
             float y = Random.Range(0.0f, 1.0f);
-            if (withRandomZ) z = Random.Range(2.0f, 3.0f);
+            float z = Random.Range(SettingsLoader.RandomHeightRange.min, SettingsLoader.RandomHeightRange.max);
             points[i] = (new Vector3(x, y, z));
         }
 
@@ -100,7 +94,6 @@ public class VoronoiDiagram3D : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            // Toggle the bool value
             animate = !animate;
         }
 
@@ -118,7 +111,7 @@ public class VoronoiDiagram3D : MonoBehaviour
             pointData[i * 3 + 2] = pointPositions[i].z;
         }
 
-        voronoiCorners = CalculateVoronoiCorners(pointPositions);
+        //voronoiCorners = CalculateVoronoiCorners(pointPositions);
 
         /*var materialProperty = new MaterialPropertyBlock();
         materialProperty.SetFloatArray("_Points", pointData);
@@ -158,7 +151,7 @@ public class VoronoiDiagram3D : MonoBehaviour
                 }
                
             }
-            GameObject cone = GenerateCone("Cone_" + i, pointPositions[i].z, SettingsLoader.ConeRadius, SettingsLoader.ConeSegments, position, color);
+            GameObject cone = GenerateCone("Cone_" + i, pointPositions[i].z, SettingsLoader.ConeRadiusMultiplier, SettingsLoader.ConeSegments, position, color);
             cones[i] = cone;
         }
     }
@@ -171,7 +164,7 @@ public class VoronoiDiagram3D : MonoBehaviour
         }
     }
 
-    GameObject GenerateCone(string name, float height, float bottomRadius, int numVertices, Vector3 position, Color color)
+    GameObject GenerateCone(string name, float height, float radiusMultiplier, int numVertices, Vector3 position, Color color)
     {
         GameObject coneObject = new GameObject(name);
 
@@ -182,7 +175,7 @@ public class VoronoiDiagram3D : MonoBehaviour
         MeshRenderer meshRenderer = coneObject.AddComponent<MeshRenderer>();
 
         // Call the CreateConeMesh method to generate the cone mesh
-        Mesh coneMesh = ConeMesh.CreateConeMesh(height, bottomRadius, numVertices);
+        Mesh coneMesh = ConeMesh.CreateConeMesh(height, radiusMultiplier, numVertices);
 
         // Assign the generated mesh to the MeshFilter
         meshFilter.mesh = coneMesh;
