@@ -5,7 +5,7 @@
   "ConeRadiusMultiplier": 0.4,
   "ConeSegments": 21,
   "DrawVertices": false,
-  "ShowSeeds": true,
+  "ShowSeeds": false,
   "Orthographic": true,
   "Isometric": false,
   "Speed": 0.05,
@@ -13,8 +13,13 @@
     "min": 0.5,
     "max": 2.0
   },
-  "Shader": "Unlit/Color",
-  "BackgroundColor": "#333333",
+  "BackgroundColor": "#FF0000",
+  "Shader": "Custom/BloodCellShader",
+  "BloodCellShaderColor1": "#000000",
+  "BloodCellShaderColor2": "#FFFFFF",
+  "BloodCellShaderColor3": "#FF0000",
+  "BloodCellShaderMidRange": 0.1,
+  "BloodCellShaderTopRange": 0.4,
   "Points": [
     {
       "x": 0.1,

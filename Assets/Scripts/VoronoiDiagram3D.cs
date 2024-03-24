@@ -149,7 +149,7 @@ public class VoronoiDiagram3D : MonoBehaviour
                 {
                     color = new Color(Random.value, Random.value, Random.value);
                 }
-               
+
             }
             GameObject cone = GenerateCone("Cone_" + i, pointPositions[i].z, SettingsLoader.ConeRadiusMultiplier, SettingsLoader.ConeSegments, position, color);
             cones[i] = cone;
@@ -183,8 +183,14 @@ public class VoronoiDiagram3D : MonoBehaviour
         // Optionally, assign a material to the MeshRenderer
         // For this example, we'll use a default material
         meshRenderer.material = new Material(Shader.Find(SettingsLoader.Shader));
-        meshRenderer.material.color = color;
+       // meshRenderer.material.color = color;
 
+        meshRenderer.material.SetColor("_BaseColor", SettingsLoader.BloodCellShaderColor1);
+        meshRenderer.material.SetColor("_MidColor", SettingsLoader.BloodCellShaderColor2);
+        meshRenderer.material.SetColor("_TipColor", SettingsLoader.BloodCellShaderColor3);
+        meshRenderer.material.SetFloat("_MidPoint", SettingsLoader.BloodCellShaderMidRange);
+        meshRenderer.material.SetFloat("_TopPoint", SettingsLoader.BloodCellShaderTopRange);
+        
         // Set the position of the cone
         coneObject.transform.position = position;
 

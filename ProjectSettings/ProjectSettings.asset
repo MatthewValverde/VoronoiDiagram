@@ -161,7 +161,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.VoronoiDiagram
+    Standalone: com.MatthewValverde.VoronoiDiagram
   buildNumber:
     Standalone: 0
     VisionOS: 0

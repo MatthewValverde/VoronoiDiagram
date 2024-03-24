@@ -22,6 +22,11 @@ public class SettingsLoader : MonoBehaviour
     public static List<Color> Colors = new List<Color>();
     public static event Action OnSettingsLoaded;
     public static Color BackgroundColor;
+    public static Color BloodCellShaderColor1;
+    public static Color BloodCellShaderColor2;
+    public static Color BloodCellShaderColor3;
+    public static float BloodCellShaderMidRange;
+    public static float BloodCellShaderTopRange;
 
     void Start()
     {
@@ -67,10 +72,31 @@ public class SettingsLoader : MonoBehaviour
             DrawVertices = loadedData.DrawVertices;
             AmountOfRandomPoints = loadedData.AmountOfRandomPoints;
             RandomHeightRange = loadedData.RandomHeightRange;
+            BloodCellShaderMidRange = loadedData.BloodCellShaderMidRange;
+            BloodCellShaderTopRange = loadedData.BloodCellShaderTopRange;
+
             Color backgroundColor;
             if (ColorUtility.TryParseHtmlString(loadedData.BackgroundColor, out backgroundColor))
             {
                 BackgroundColor = backgroundColor;
+            }
+
+            Color bloodCellShaderColor1;
+            if (ColorUtility.TryParseHtmlString(loadedData.BloodCellShaderColor1, out bloodCellShaderColor1))
+            {
+                BloodCellShaderColor1 = bloodCellShaderColor1;
+            }
+
+            Color bloodCellShaderColor2;
+            if (ColorUtility.TryParseHtmlString(loadedData.BloodCellShaderColor2, out bloodCellShaderColor2))
+            {
+                BloodCellShaderColor2 = bloodCellShaderColor2;
+            }
+
+            Color bloodCellShaderColor3;
+            if (ColorUtility.TryParseHtmlString(loadedData.BloodCellShaderColor3, out bloodCellShaderColor3))
+            {
+                BloodCellShaderColor3 = bloodCellShaderColor3;
             }
 
             // Points
@@ -121,6 +147,11 @@ public class SettingsLoader : MonoBehaviour
         public List<Point> Points;
         public List<string> Colors;
         public string BackgroundColor;
+        public string BloodCellShaderColor1;
+        public string BloodCellShaderColor2;
+        public string BloodCellShaderColor3;
+        public float BloodCellShaderMidRange;
+        public float BloodCellShaderTopRange;
     }
 
     [System.Serializable]
