@@ -10,7 +10,7 @@ JSON property types:
 
 "AmountOfRandomPoints":(INT),
 
-"ConeRadius":(FLOAT),
+"ConeRadiusMultiplier":(FLOAT),
 
 "ConeSegments":(INT),
 
@@ -24,7 +24,19 @@ JSON property types:
 
 "Speed":(FLOAT),
 
-"Shader":(STRING),
+"BackgroundColor":(COLOR),
+
+"Shader":(STRING), ["BloodCellShader", "Unlit/Color", "Standard"]
+
+"BloodCellShaderColor1":(COLOR),
+
+"BloodCellShaderColor2":(COLOR),
+
+"BloodCellShaderColor3":(COLOR),
+
+"BloodCellShaderMidRange":(FLOAT), [0.0 - 1.0]
+
+"BloodCellShaderTopRange":(FLOAT), [0.0 - 1.0]
 
 "Points": (ARRAY)
 
