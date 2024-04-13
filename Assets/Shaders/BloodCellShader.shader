@@ -2,11 +2,11 @@ Shader "Custom/BloodCellShader"
 {
     Properties
     {
-        _BaseColor("Base Color", Color) = (0,0,0,1) // Black
-        _MidColor("Middle Color", Color) = (1,1,1,1) // White
+        _BaseColor("Base Color", Color) = (1,1,1,1) // White
+        _MidColor("Middle Color", Color) = (0,0,0,1) // Black
         _TipColor("Tip Color", Color) = (1,0,0,1) // Red
-        _MidPoint("Middle Point", Range(0,1)) = 0.1 // Point where the base transitions to the middle
-        _TopPoint("Top Point", Range(0,1)) = 0.4  // Point where the middle transitions to the tip
+        _MidPoint("Middle Point", Range(0,1)) = 0.9 // Point where the base transitions to the middle
+        _TopPoint("Top Point", Range(0,1)) = 1.0  // Point where the middle transitions to the tip
     }
         SubShader
     {
@@ -56,11 +56,16 @@ Shader "Custom/BloodCellShader"
                     // Base to Middle Color
                     color = lerp(_BaseColor, _MidColor, height / _MidPoint);
                 }
- else if (height >= _MidPoint && height < _TopPoint) {
+                else if (height >= _MidPoint && height < _TopPoint) {
                     // Middle to Tip Color
-                    color = lerp(_MidColor, _TipColor, (height - _MidPoint) / (_TopPoint - _MidPoint));
+                    
+    // Smooth transition from middle to tip color
+    float transitionProgress = (height - _MidPoint) / (_TopPoint - _MidPoint);
+    transitionProgress = clamp(transitionProgress, 0.0, 1.0); // Ensure the progress stays within bounds
+    color = lerp(_MidColor, _TipColor, transitionProgress);
+    
                 }
- else {
+                else {
                     // Tip Color (no interpolation needed here)
                     color = _TipColor;
                 }
